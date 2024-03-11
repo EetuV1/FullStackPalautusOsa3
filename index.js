@@ -1,7 +1,9 @@
 const express = require("express")
 const app = express()
+const morgan = require("morgan")
 
 app.use(express.json())
+app.use(morgan("tiny"))
 
 let persons = [
     {
@@ -67,14 +69,20 @@ app.post("/api/persons", (request, response) => {
         })
     }
 
-    if (persons.find((person) => person.name === body.name)) {
+    const randomId = Math.floor(Math.random() * 1000000000)
+
+    if (
+        persons.find(
+            (person) => person.name === body.name || person.id == randomId
+        )
+    ) {
         return response.status(400).json({
-            error: "name must be unique",
+            error: "name must be unique or id error.",
         })
     }
 
     const person = {
-        id: Math.floor(Math.random() * 1000000000),
+        id: randomId,
         name: body.name,
         number: body.number,
     }
