@@ -4,76 +4,54 @@ const cors = require("cors")
 
 const app = express()
 
+const Person = require("./models/person")
+
 app.use(express.static("dist"))
 app.use(express.json())
 app.use(cors())
 
 app.use(
-    morgan((tokens, req, res) => {
+    morgan((tokens, request, response) => {
         return [
-            tokens.method(req, res),
-            tokens.url(req, res),
-            tokens.status(req, res),
-            tokens.res(req, res, "content-length"),
+            tokens.method(request, response),
+            tokens.url(request, response),
+            tokens.status(request, response),
+            tokens.res(request, response, "content-length"),
             "-",
-            tokens["response-time"](req, res),
+            tokens["response-time"](request, response),
             "ms",
-            JSON.stringify(req.body),
+            JSON.stringify(request.body),
         ].join(" ")
     })
 )
 
-let persons = [
-    {
-        id: 1,
-        name: "Arto Hellas",
-        number: "040-123456",
-    },
-    {
-        id: 2,
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-    },
-    {
-        id: 3,
-        name: "Dan Abramov",
-        number: "12-43-234345",
-    },
-    {
-        id: 4,
-        name: "Mary Poppendieck",
-        number: "39-23-6423122",
-    },
-]
-
 app.get("/", (request, response) => {
-    response.send("Ok")
+    response.send("To get all persons, go to /api/persons")
 })
 
 app.get("/info", (request, response) => {
-    response.send(
-        `<p>Phonebook has info for ${persons.length} people</p>
-        <p>${new Date()}</p>`
-    )
+    Person.find({}).then((person) => {
+        response.send(
+            `<p>Phonebook has info for ${person.length} people</p>
+            <p>${new Date()}</p>`
+        )
+    })
 })
 
 app.get("/api/persons", (request, response) => {
-    response.json(persons)
+    Person.find({}).then((person) => {
+        response.json(person)
+    })
 })
 
 app.get("/api/persons/:id", (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find((person) => person.id === id)
-    if (person) {
+    Person.findById(request.params.id).then((person) => {
         response.json(person)
-    } else {
-        response.status(404).end()
-    }
+    })
 })
 
 app.delete("/api/persons/:id", (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter((person) => person.id !== id)
+    Person.findByIdAndRemove(request.params.id)
 
     response.status(204).end()
 })
@@ -87,26 +65,16 @@ app.post("/api/persons", (request, response) => {
         })
     }
 
-    const randomId = Math.floor(Math.random() * 1000000000)
+    // Should check if the person name exists in the database
 
-    if (
-        persons.find(
-            (person) => person.name === body.name || person.id == randomId
-        )
-    ) {
-        return response.status(400).json({
-            error: "name must be unique or id error.",
-        })
-    }
-
-    const person = {
-        id: randomId,
+    const person = new Person({
         name: body.name,
         number: body.number,
-    }
+    })
 
-    persons = persons.concat(person)
-    response.json(person)
+    person.save().then((person) => {
+        response.json(person)
+    })
 })
 
 const PORT = process.env.PORT || 3001
