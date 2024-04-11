@@ -25,10 +25,6 @@ app.use(
     })
 )
 
-app.get("/", (request, response) => {
-    response.send("To get all persons, go to /api/persons")
-})
-
 app.get("/info", (request, response) => {
     Person.find({}).then((person) => {
         response.send(
