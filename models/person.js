@@ -1,9 +1,8 @@
 const mongoose = require("mongoose")
 
-// Retrieve MongoDB password from environment variable
-// command: export MONGODB_PASSWORD=<your password>
-const password = process.env.MONGODB_PASSWORD
-const url = `mongodb+srv://eetuvalkamo:${password}@clusterforosa3.m5wzjkn.mongodb.net/?retryWrites=true&w=majority&appName=ClusterForOsa3`
+// Retrieve MongoDB url from environment variable
+// command: export MONGODB_URL=<your url with password>
+const url = process.env.MONGODB_URL
 
 mongoose.set("strictQuery", false)
 

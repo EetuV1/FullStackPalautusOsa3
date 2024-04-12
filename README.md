@@ -1,8 +1,11 @@
-Fly.io linkki sovellukseen:
+Fly.io link:
 https://osa3.fly.dev
 
-Deploy komento:
+Deploy command:
 fly deploy
 
-Näytä logi komento:
+Show Fly log:
 fly logs
+
+Add MongoDB url before npm run dev:
+export MONGODB_URL=<your secret url>
