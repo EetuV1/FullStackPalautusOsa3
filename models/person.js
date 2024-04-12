@@ -18,11 +18,20 @@ mongoose
     })
 
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minlength: 3,
+        required: true,
+        unique: true,
+    },
+    number: {
+        type: String,
+        // minlength: 8,
+        required: true,
+    },
 })
 
-// MondoDB generated __id (object) to id (string)
+// MondoDB generated _id (object) to id (string)
 // Remove __v (version key) and _id
 personSchema.set("toJSON", {
     transform: (document, returnedObject) => {
