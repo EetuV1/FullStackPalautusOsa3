@@ -9,7 +9,7 @@ mongoose.set("strictQuery", false)
 console.log("connecting to", url)
 mongoose
     .connect(url)
-    .then((result) => {
+    .then(() => {
         console.log("Connected to MongoDB")
     })
     .catch((error) => {
@@ -28,6 +28,7 @@ const personSchema = new mongoose.Schema({
         minlength: 8,
         required: true,
         validate: {
+            // Has to be in the format of 123-4567890 or 12-4567890123
             validator: function (v) {
                 return /^(\d{2,3}-\d+)$/.test(v)
             },
